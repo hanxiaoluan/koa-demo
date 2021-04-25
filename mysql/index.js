@@ -18,5 +18,21 @@ const sqlContentMap = getSqlContentMap()
 const createAllTables = async() => {
 	for (const key in sqlContentMap) {
 		const sqlShell = sqlContentMap[key]
+		const sqlShellList = sqlShell.split(';')
+
+		for (const [i, shell] of sqlShellList.entries()) {
+			if (shell.trim()) {
+				const result = await query(shell)
+				if (result.serverStatus * 1 === 2) {
+					eventLog(null, key, i)
+				} else {
+					eventLog(true, key, i)
+				}
+			}
+		}
 	}
+	console.log('sql脚本执行结束! ')
+	console.log('请按ctrl + c键退出')
 }
+
+createAllTables()
